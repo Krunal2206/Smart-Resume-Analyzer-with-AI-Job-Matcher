@@ -105,46 +105,25 @@ export default function NavbarClient({ session }: NavbarClientProps) {
           >
             <Link
               href="/"
-              className="flex items-center justify-center gap-2 hover:text-blue-400 transition"
+              className="flex items-center justify-center gap-2"
               onClick={() => setMenuOpen(false)}
             >
               <Home size={18} /> Home
             </Link>
             <Link
               href="/upload"
-              className="flex items-center justify-center gap-2 hover:text-blue-400 transition"
+              className="flex items-center justify-center gap-2"
               onClick={() => setMenuOpen(false)}
             >
               <UploadCloud size={18} /> Upload
             </Link>
             <Link
               href="/dashboard"
-              className="flex items-center justify-center gap-2 hover:text-blue-400 transition"
+              className="flex items-center justify-center gap-2"
               onClick={() => setMenuOpen(false)}
             >
               <LayoutDashboard size={18} /> Dashboard
             </Link>
-            <Link
-              href="/dashboard/history"
-              className="flex items-center justify-center gap-2 hover:text-blue-400 transition"
-            >
-              <Archive size={18} /> History
-            </Link>
-            <Link
-              href="/jobs"
-              className="flex items-center justify-center gap-2 hover:text-blue-400 transition"
-            >
-              <Search size={18} /> Job Finder
-            </Link>
-
-            {session?.user?.role === "admin" && (
-              <Link
-                href="/admin/dashboard"
-                className="flex items-center justify-center gap-2 hover:text-blue-400 transition"
-              >
-                Admin
-              </Link>
-            )}
 
             {session?.user ? (
               <button
