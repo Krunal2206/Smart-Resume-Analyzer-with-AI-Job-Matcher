@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-toast": "^1.2.11",
     "bcryptjs": "^3.0.2",
+    "chart.js": "^4.4.9",
     "framer-motion": "^12.9.1",
     "lucide-react": "^0.503.0",
     "mongoose": "^8.14.1",
@@ -21,9 +22,9 @@
     "pdf-lib": "^1.17.1",
     "pdf2json": "^3.1.5",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.1",
-    "recharts": "^2.15.3",
     "zod": "^3.24.3",
     "zustand": "^5.0.3"
   },

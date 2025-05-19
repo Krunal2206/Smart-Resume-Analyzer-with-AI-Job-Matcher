@@ -34,7 +34,7 @@ export default function NavbarClient({ session }: NavbarClientProps) {
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6 items-center">
+        <div className="hidden lg:flex space-x-6 items-center">
           <Link
             href="/"
             className="flex items-center gap-1 hover:text-blue-400 transition"
@@ -89,7 +89,7 @@ export default function NavbarClient({ session }: NavbarClientProps) {
         </div>
 
         {/* Mobile Toggle Button */}
-        <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="lg:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
@@ -101,7 +101,7 @@ export default function NavbarClient({ session }: NavbarClientProps) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-gray-800 overflow-hidden px-4 py-4 space-y-4 text-center"
+            className="lg:hidden bg-gray-800 overflow-hidden px-4 py-4 space-y-4 text-center"
           >
             <Link
               href="/"
