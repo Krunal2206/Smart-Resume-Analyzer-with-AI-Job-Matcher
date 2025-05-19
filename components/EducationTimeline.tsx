@@ -22,7 +22,7 @@ const EducationTimeline = ({ education }: { education: Education[] }) => {
             <li key={eduIdx}>
               <div className="text-blue-300 font-bold">{edu.year}</div>
               <p className="text-white font-medium flex items-center gap-2">
-                <GraduationCap size={16} /> {edu.degree}
+                <GraduationCap size={16} className='flex-none' /> {edu.degree}
               </p>
               <p className="text-sm text-gray-400">{edu.university}</p>
             </li>
