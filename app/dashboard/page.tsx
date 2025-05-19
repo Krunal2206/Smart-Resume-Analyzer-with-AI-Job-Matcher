@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { fetchJobsBySkills } from "@/lib/fetchJobsBySkills";
+import DashboardCharts from "@/components/DashboardCharts";
 
 export default async function Dashboard() {
   const session = await auth();
@@ -59,11 +60,11 @@ export default async function Dashboard() {
         {/* Job Recommendations */}
         {externalJobs.length > 0 ? (
           <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-blue-400 mb-4">
-            Recommended Jobs
-          </h2>
-          
-          <RecommendedJobs jobs={externalJobs} />
+            <h2 className="text-2xl font-semibold text-blue-400 mb-4">
+              Recommended Jobs
+            </h2>
+
+            <RecommendedJobs jobs={externalJobs} />
           </div>
         ) : (
           <p className="text-gray-400 text-sm italic">
@@ -91,6 +92,12 @@ export default async function Dashboard() {
 
         {/* Download Resume */}
         <ResumeDownload />
+
+        {/* ✅ Dashboard Charts */}
+        <DashboardCharts
+          resumes={JSON.parse(JSON.stringify(resumes))}
+          allSkills={allSkills}
+        />
 
         {/* Career Tip Box */}
         <CareerTip />
