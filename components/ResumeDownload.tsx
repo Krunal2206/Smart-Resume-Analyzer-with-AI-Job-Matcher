@@ -12,7 +12,7 @@ export default function ResumeDownload() {
         onClick={handleDownload}
         className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 mx-auto cursor-pointer"
       >
-        <Download size={18} /> Download Improved Resume (PDF)
+        <Download size={18} className="flex-none" /> Download Improved Resume (PDF)
       </button>
     </div>
   );
