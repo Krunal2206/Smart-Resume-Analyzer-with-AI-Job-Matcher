@@ -6,12 +6,8 @@ declare module "next-auth" {
     role?: string;
   }
 }
-import { connectDB } from "@/lib/mongodb";
-import { User } from "@/models/User";
-import { Resume } from "@/models/Resume";
 import { redirect } from "next/navigation";
 import AdminTabs from "@/components/AdminTabs";
-import { get } from "http";
 import { getAdminAnalytics } from "@/lib/getAdminAnalytics";
 
 export default async function AdminDashboard() {
