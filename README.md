@@ -17,7 +17,6 @@ An AI-powered full-stack web application to upload, analyze, and improve resumes
 - 🔍 Extracted name, email, skills, and education
 - 📊 Skill gap analysis vs job market
 - 💼 Live job recommendations (LinkedIn/Indeed APIs)
-- 🌗 Dark/Light theme toggle
 - 🔒 Role-based access (Admin/User)
 - 📦 Resume archive, reanalyze, delete
 - 📈 Admin dashboard with real-time charts
