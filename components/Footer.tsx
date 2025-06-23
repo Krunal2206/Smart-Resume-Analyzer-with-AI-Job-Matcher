@@ -8,13 +8,13 @@ const Footer = () => {
           rights reserved.
         </p>
         <div className="flex gap-4 mt-4 md:mt-0">
-          <a href="#" className="hover:text-white transition">
+          <a href="/privacy" className="hover:text-white transition">
             Privacy
           </a>
-          <a href="#" className="hover:text-white transition">
+          <a href="/terms" className="hover:text-white transition">
             Terms
           </a>
-          <a href="#" className="hover:text-white transition">
+          <a href="/contact" className="hover:text-white transition">
             Contact
           </a>
         </div>
