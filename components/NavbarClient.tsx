@@ -9,6 +9,7 @@ import {
   LogIn,
   Menu,
   Search,
+  Settings,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -58,6 +59,12 @@ export default function NavbarClient({ session }: NavbarClientProps) {
             className="flex items-center gap-1 hover:text-blue-400 transition"
           >
             <Archive size={18} /> History
+          </Link>
+          <Link
+            href="/dashboard/settings"
+            className="flex items-center gap-1 hover:text-blue-400 transition"
+          >
+            <Settings size={18} /> Settings
           </Link>
           <Link
             href="/jobs"

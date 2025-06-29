@@ -19,13 +19,13 @@ interface RecommendedJobsProps {
 
 const RecommendedJobs: React.FC<RecommendedJobsProps> = ({ jobs }) => {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 grid-cols-1">
       {jobs.slice(0, 10).map((job) => (
         <div
           key={job.job_id}
           className="bg-gray-900 p-6 rounded-xl border border-gray-800"
         >
-          <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2 flex-wrap">
             <Briefcase size={18} className="flex-none" /> {job.job_title}
           </h3>
 
