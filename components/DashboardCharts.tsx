@@ -12,7 +12,7 @@ import {
   Legend,
   Title,
 } from "chart.js";
-import { Bar, Line, Pie } from "react-chartjs-2";
+import { Line, Pie } from "react-chartjs-2";
 import { useMemo } from "react";
 
 ChartJS.register(
