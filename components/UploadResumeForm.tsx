@@ -40,12 +40,32 @@ export default function UploadResumeForm() {
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json();      
 
       if (!res.ok) {
-        trigger("Upload Failed ❌", data.message || "Unknown error");
+        if (data.limited && data.ttl) {
+          trigger(
+            "Rate Limit Reached 🛑",
+            `Try again in ${Math.ceil(data.ttl / 60)} minute(s).`
+          );
+        } else {
+          trigger("Upload Failed ❌", data.message || "Unknown error");
+        }
       } else {
         trigger("Resume Uploaded 🎯", "Resume parsed successfully!");
+
+        if (
+          typeof data.remaining !== "undefined" &&
+          typeof data.ttl !== "undefined"
+        ) {
+          trigger(
+            "Remaining Uploads ⏳",
+            `You have ${data.remaining} upload(s) left in the next ${Math.ceil(
+              data.ttl / 60
+            )} minutes.`
+          );
+        }
+
         setParsedText(data.parsed);
         redirect("/dashboard");
       }
