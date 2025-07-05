@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Resume } from "@/models/Resume";
 import { redirect } from "next/navigation";
 import ResumeHistoryPageClient from "./ResumeHistoryPageClient";
+import AnimatedSection from "@/components/AnimatedSection";
 
 export default async function ResumeHistoryPage() {
   const session = await auth();
@@ -14,8 +15,10 @@ export default async function ResumeHistoryPage() {
   });
 
   return (
-    <ResumeHistoryPageClient
-      initialResumes={JSON.parse(JSON.stringify(resumes))}
-    />
+    <AnimatedSection>
+      <ResumeHistoryPageClient
+        initialResumes={JSON.parse(JSON.stringify(resumes))}
+      />
+    </AnimatedSection>
   );
 }
