@@ -4,6 +4,8 @@ import { Resume } from "@/models/Resume";
 import { auth } from "@/lib/auth";
 import extractPDFText from "@/utils/pdf";
 import analyzeResumeWithAI from "@/utils/ai";
+import redis from "@/lib/redis";
+import { isRateLimited } from "@/lib/rateLimiter";
 
 export const runtime = "nodejs";
 
@@ -16,6 +18,21 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { message: "User not authenticated" },
         { status: 401 }
+      );
+    }
+
+    const { limited, ttl, remaining } = await isRateLimited(userEmail);
+    if (limited) {
+      return NextResponse.json(
+        {
+          message: `Rate limit exceeded. Try again in ${Math.ceil(
+            ttl / 60
+          )} minute(s).`,
+          limited: true,
+          ttl,
+          remaining,
+        },
+        { status: 429 }
       );
     }
 
@@ -46,7 +63,9 @@ export async function POST(req: Request) {
       userEmail,
     });
 
-    return NextResponse.json({ message: "Resume parsed and saved", parsed });
+    await redis.del(`dashboard:analytics:${userEmail}`);
+
+    return NextResponse.json({ message: "Resume parsed and saved", parsed, limited:false, ttl, remaining }, { status: 200 });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
