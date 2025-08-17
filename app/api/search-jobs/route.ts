@@ -3,6 +3,11 @@ import redis from "@/lib/redis";
 
 const JOB_CACHE_TTL = 60 * 10; // 10 minutes
 
+interface JobSearchResponse {
+  data?: unknown[];
+  message?: string;
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query");
@@ -10,7 +15,11 @@ export async function GET(req: Request) {
   const remote = searchParams.get("remote") === "true";
   const page = searchParams.get("page") || "1";
 
-  const key = `jobsfinder:cache:${Buffer.from(`${query} ${location} ${remote} ${page}`).toString("base64").slice(0, 32)}`;
+  const key = `jobsfinder:cache:${Buffer.from(
+    `${query} ${location} ${remote} ${page}`
+  )
+    .toString("base64")
+    .slice(0, 32)}`;
   const cached = await redis.get(key);
 
   if (cached) {
@@ -18,7 +27,9 @@ export async function GET(req: Request) {
       console.log("Cache hit for job search");
       return NextResponse.json(JSON.parse(cached));
     } catch {
-      console.warn("Failed to parse cached jobs response, fetching fresh data.");
+      console.warn(
+        "Failed to parse cached jobs response, fetching fresh data."
+      );
     }
   }
 
@@ -40,7 +51,7 @@ export async function GET(req: Request) {
       cache: "no-store",
     });
 
-    const data = await res.json();
+    const data: JobSearchResponse = await res.json();
     if (!res.ok) {
       throw new Error(data.message || "Failed to fetch jobs");
     }
@@ -51,7 +62,9 @@ export async function GET(req: Request) {
       JOB_CACHE_TTL
     );
     return NextResponse.json({ jobs: data.data || [] });
-  } catch (err: any) {
-    return NextResponse.json({ message: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Failed to fetch jobs";
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }

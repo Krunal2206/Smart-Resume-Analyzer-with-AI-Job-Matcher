@@ -65,11 +65,22 @@ export async function POST(req: Request) {
 
     await redis.del(`dashboard:analytics:${userEmail}`);
 
-    return NextResponse.json({ message: "Resume parsed and saved", parsed, limited:false, ttl, remaining }, { status: 200 });
-  } catch (error: any) {
-    console.error("Upload error:", error);
     return NextResponse.json(
-      { message: "Unexpected error occurred", error: error.message },
+      {
+        message: "Resume parsed and saved",
+        parsed,
+        limited: false,
+        ttl,
+        remaining,
+      },
+      { status: 200 }
+    );
+  } catch (error: unknown) {
+    console.error("Upload error:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred";
+    return NextResponse.json(
+      { message: "Unexpected error occurred", error: errorMessage },
       { status: 500 }
     );
   }

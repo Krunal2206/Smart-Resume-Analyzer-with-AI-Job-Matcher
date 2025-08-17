@@ -40,8 +40,10 @@ export async function POST(req: Request, context: { params: { id: string } }) {
     await resume.save();
 
     return NextResponse.json({ message: "Resume re-analyzed and updated" });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Reanalyze error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const errorMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
