@@ -3,15 +3,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { Resume } from "@/models/Resume";
 import { connectDB } from "@/lib/mongodb";
 import { auth } from "@/lib/auth";
-
-interface SkillGap {
-  skill: string;
-  missing: string;
-}
-
-interface Resume {
-  skillGap?: SkillGap[];
-}
+import { Education, Readiness, RecommendedJob, ResumeData, SkillGap } from "@/types/resume";
 
 export const runtime = "nodejs";
 
@@ -25,9 +17,9 @@ export async function GET() {
     }
 
     await connectDB();
-    const resume = await Resume.findOne({ userEmail: email }).sort({
+    const resume = (await Resume.findOne({ userEmail: email }).sort({
       createdAt: -1,
-    });
+    })) as ResumeData | null;
 
     if (!resume) {
       return NextResponse.json({ message: "No resume found" }, { status: 404 });
@@ -121,7 +113,7 @@ export async function GET() {
     // Education
     if (resume.education?.length) {
       drawHeader("Education");
-      resume.education.forEach((edu: any) => {
+      resume.education.forEach((edu: Education) => {
         drawText(`${edu.year}`, 0);
         drawText(`${edu.degree}`, 20);
         drawText(`${edu.university}`, 20);
@@ -132,7 +124,7 @@ export async function GET() {
     // Recommended Jobs
     if (resume.recommendedJobs?.length) {
       drawHeader("Recommended Jobs");
-      resume.recommendedJobs.forEach((job: any) => {
+      resume.recommendedJobs.forEach((job: RecommendedJob) => {
         drawText(`${job.title} - ${job.company}`, 10);
         drawText(`Skill Match: ${job.skillsMatch}%`, 20);
       });
@@ -141,7 +133,7 @@ export async function GET() {
     // Skill Readiness
     if (resume.readiness?.length) {
       drawHeader("Skill Readiness");
-      resume.readiness.forEach((item: any) => {
+      resume.readiness.forEach((item: Readiness) => {
         drawText(`${item.role}: ${item.percent}%`, 10);
       });
     }
@@ -149,7 +141,7 @@ export async function GET() {
     // Skill Gaps
     if (resume.skillGap?.length) {
       drawHeader("Skill Gap");
-      resume.skillGap.forEach((item: any) => {
+      resume.skillGap.forEach((item: SkillGap) => {
         drawText(`${item.skill}: Missing Level ${item.missing}`, 10);
       });
     }
@@ -162,7 +154,9 @@ export async function GET() {
         "Content-Disposition": "attachment; filename=improved_resume.pdf",
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }
