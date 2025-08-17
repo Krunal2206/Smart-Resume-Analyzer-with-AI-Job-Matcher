@@ -1,15 +1,17 @@
-import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Footer from "../components/Footer";
-import { GlobalToaster } from "../lib/useToast";
+import Footer from "@/components/Footer";
+import { GlobalToaster } from "@/lib/useToast";
+import "@/lib/env"; // Validate environment variables at startup
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Smart Resume Analyzer & Job Matcher",
-  description: "AI-powered resume analysis and job recommendations",
+  title: "ResumeAI - AI-Powered Resume Analysis",
+  description:
+    "Upload your resume and get AI-powered insights, skill analysis, and job recommendations.",
 };
 
 export default function RootLayout({
@@ -21,11 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        <div className="min-h-screen bg-gray-950 text-white">
-          {children}
-          <Footer />
-          <GlobalToaster />
-        </div>
+        <main>{children}</main>
+        <Footer />
+        <GlobalToaster />
       </body>
     </html>
   );

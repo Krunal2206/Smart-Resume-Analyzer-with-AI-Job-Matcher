@@ -20,21 +20,34 @@ export async function GET(req: Request) {
   )
     .toString("base64")
     .slice(0, 32)}`;
-  const cached = await redis.get(key);
 
-  if (cached) {
-    try {
-      console.log("Cache hit for job search");
-      return NextResponse.json(JSON.parse(cached));
-    } catch {
-      console.warn(
-        "Failed to parse cached jobs response, fetching fresh data."
-      );
+  // Try to get cached data
+  try {
+    const cached = await redis.get(key);
+    if (cached) {
+      try {
+        console.log("Cache hit for job search");
+        return NextResponse.json(JSON.parse(cached));
+      } catch {
+        console.warn(
+          "Failed to parse cached jobs response, fetching fresh data."
+        );
+      }
     }
+  } catch (error) {
+    console.warn("Redis error, proceeding without cache:", error);
   }
 
   if (!query) {
     return NextResponse.json({ message: "Missing query" }, { status: 400 });
+  }
+
+  // Check if required environment variables are available
+  if (!process.env.RAPIDAPI_KEY || !process.env.RAPIDAPI_HOST) {
+    return NextResponse.json(
+      { message: "Job search service temporarily unavailable" },
+      { status: 503 }
+    );
   }
 
   try {
@@ -45,26 +58,58 @@ export async function GET(req: Request) {
 
     const res = await fetch(url, {
       headers: {
-        "X-RapidAPI-Key": process.env.RAPIDAPI_KEY!,
-        "X-RapidAPI-Host": process.env.RAPIDAPI_HOST!,
+        "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
+        "X-RapidAPI-Host": process.env.RAPIDAPI_HOST,
       },
       cache: "no-store",
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
-    const data: JobSearchResponse = await res.json();
     if (!res.ok) {
-      throw new Error(data.message || "Failed to fetch jobs");
+      throw new Error(`API responded with status: ${res.status}`);
     }
-    await redis.set(
-      key,
-      JSON.stringify({ jobs: data.data }),
-      "EX",
-      JOB_CACHE_TTL
-    );
+
+    const data: JobSearchResponse = await res.json();
+
+    if (!data.data) {
+      throw new Error("Invalid response format from job API");
+    }
+
+    // Cache the successful response
+    try {
+      await redis.set(
+        key,
+        JSON.stringify({ jobs: data.data }),
+        "EX",
+        JOB_CACHE_TTL
+      );
+    } catch (cacheError) {
+      console.warn("Failed to cache job search results:", cacheError);
+    }
+
     return NextResponse.json({ jobs: data.data || [] });
   } catch (err: unknown) {
+    console.error("Job search API error:", err);
+
+    // Return cached data if available, even if expired
+    try {
+      const staleCache = await redis.get(key);
+      if (staleCache) {
+        console.log("Returning stale cache due to API failure");
+        return NextResponse.json(JSON.parse(staleCache));
+      }
+    } catch (cacheError) {
+      console.warn("Failed to retrieve stale cache:", cacheError);
+    }
+
     const errorMessage =
       err instanceof Error ? err.message : "Failed to fetch jobs";
-    return NextResponse.json({ message: errorMessage }, { status: 500 });
+    return NextResponse.json(
+      {
+        message: "Job search temporarily unavailable. Please try again later.",
+        error: errorMessage,
+      },
+      { status: 503 }
+    );
   }
 }
