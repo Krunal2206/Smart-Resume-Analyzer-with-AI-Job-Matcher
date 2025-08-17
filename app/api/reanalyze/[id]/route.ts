@@ -4,7 +4,10 @@ import { Resume } from "@/models/Resume";
 import { auth } from "@/lib/auth";
 import analyzeResumeWithAI from "@/utils/ai";
 
-export async function POST(req: Request, context: { params: { id: string } }) {
+export async function POST(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await auth();
     if (!session?.user?.email) {

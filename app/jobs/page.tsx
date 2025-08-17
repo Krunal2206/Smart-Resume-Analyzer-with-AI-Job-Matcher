@@ -1,28 +1,31 @@
 "use client";
 
 import RecommendedJobs from "@/components/RecommendedJobs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
+import { Job } from "@/types/resume";
 
 const JobSearchPage = () => {
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
   const [remote, setRemote] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
-  const fetchJobs = async () => {
-    if (!query) return;
+  const fetchJobs = useCallback(async () => {
+    if (!query.trim()) return;
+
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/search-jobs?query=${encodeURIComponent(
-          query
-        )}&location=${encodeURIComponent(
-          location
-        )}&remote=${remote}&page=${page}`
-      );
+      const params = new URLSearchParams({
+        query: query.trim(),
+        page: page.toString(),
+        ...(location && { location }),
+        ...(remote && { remote: "true" }),
+      });
+
+      const res = await fetch(`/api/search-jobs?${params}`);
       const data = await res.json();
 
       if (!res.ok) {
@@ -35,11 +38,11 @@ const JobSearchPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, location, remote, page]);
 
   useEffect(() => {
     fetchJobs();
-  }, [page]);
+  }, [fetchJobs]);
 
   const handleSearch = () => {
     setPage(1); // reset to first page

@@ -14,7 +14,7 @@ interface Props {
 
 export default function SettingsForm({ user }: Props) {
   const [form, setForm] = useState(user);
-  const [loading, setLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const { trigger } = useToastStore();
 
@@ -24,7 +24,7 @@ export default function SettingsForm({ user }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsUpdating(true);
     try {
       const res = await fetch("/api/user/update", {
         method: "POST",
@@ -35,10 +35,11 @@ export default function SettingsForm({ user }: Props) {
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
       trigger("Profile updated successfully!");
-    } catch (err: any) {
-      trigger(err.message || "Update failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Update failed";
+      trigger(errorMessage);
     } finally {
-      setLoading(false);
+      setIsUpdating(false);
     }
   };
 
@@ -88,10 +89,10 @@ export default function SettingsForm({ user }: Props) {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={isUpdating}
         className="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded text-white font-semibold cursor-pointer"
       >
-        {loading ? "Updating..." : "Update Profile"}
+        {isUpdating ? "Updating..." : "Update Profile"}
       </button>
     </form>
   );

@@ -27,17 +27,26 @@ ChartJS.register(
   Title
 );
 
+interface Resume {
+  _id: string;
+  createdAt: Date;
+  skills?: string[];
+}
+
+type Skill = string | { name: string; level?: string };
+
 export default function DashboardCharts({
   resumes,
   allSkills,
 }: {
-  resumes: any[];
-  allSkills: any[];
+  resumes: Resume[];
+  allSkills: Skill[];
 }) {
   const { skillData, uploadData } = useMemo(() => {
     const skillCounts: Record<string, number> = {};
     allSkills.forEach((skill) => {
-      skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+      const skillName = typeof skill === "string" ? skill : skill.name;
+      skillCounts[skillName] = (skillCounts[skillName] || 0) + 1;
     });
     const skillData = Object.entries(skillCounts).map(([label, value]) => ({
       label,
@@ -55,7 +64,7 @@ export default function DashboardCharts({
     }));
 
     return { skillData, uploadData };
-  }, [resumes]);
+  }, [resumes, allSkills]);
 
   return (
     <div className="space-y-12">

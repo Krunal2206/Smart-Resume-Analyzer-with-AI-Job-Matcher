@@ -3,7 +3,13 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { Resume } from "@/models/Resume";
 import { connectDB } from "@/lib/mongodb";
 import { auth } from "@/lib/auth";
-import { Education, Readiness, RecommendedJob, ResumeData, SkillGap } from "@/types/resume";
+import {
+  Education,
+  Readiness,
+  RecommendedJob,
+  ResumeData,
+  SkillGap,
+} from "@/types/resume";
 
 export const runtime = "nodejs";
 
@@ -125,7 +131,7 @@ export async function GET() {
     if (resume.recommendedJobs?.length) {
       drawHeader("Recommended Jobs");
       resume.recommendedJobs.forEach((job: RecommendedJob) => {
-        drawText(`${job.title} - ${job.company}`, 10);
+        drawText(`${job.job_title} - ${job.employer_name}`, 10);
         drawText(`Skill Match: ${job.skillsMatch}%`, 20);
       });
     }

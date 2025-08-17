@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { Trash2, RefreshCcw, Download } from "lucide-react";
 
+interface Resume {
+  _id: string;
+  name: string;
+  email: string;
+  skills?: string[];
+  createdAt: Date;
+}
+
 interface ResumeCardProps {
-  resume: any;
+  resume: Resume;
   onDelete: (id: string) => void;
   onReanalyze: (id: string) => void;
 }
@@ -14,8 +21,6 @@ export default function ResumeCard({
   onDelete,
   onReanalyze,
 }: ResumeCardProps) {
-  const [loading, setLoading] = useState(false);
-
   return (
     <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 space-y-2">
       <h2 className="text-xl font-semibold text-white">{resume.name}</h2>
@@ -37,20 +42,14 @@ export default function ResumeCard({
         </a>
 
         <button
-          onClick={() => {
-            setLoading(true);
-            onReanalyze(resume._id);
-          }}
+          onClick={() => onReanalyze(resume._id)}
           className="text-yellow-400 hover:underline flex items-center gap-1 cursor-pointer"
         >
           <RefreshCcw size={14} /> Re-analyze
         </button>
 
         <button
-          onClick={() => {
-            setLoading(true);
-            onDelete(resume._id);
-          }}
+          onClick={() => onDelete(resume._id)}
           className="text-red-500 hover:underline flex items-center gap-1 cursor-pointer"
         >
           <Trash2 size={14} /> Delete

@@ -1,4 +1,11 @@
-export default function AdminUsersTab({ users }: { users: any[] }) {
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+export default function AdminUsersTab({ users }: { users: User[] }) {
   return (
     <div className="space-y-6">
       {users.map((user) => (

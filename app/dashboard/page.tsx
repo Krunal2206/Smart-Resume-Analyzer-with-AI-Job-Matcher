@@ -15,6 +15,12 @@ import { fetchJobsBySkills } from "@/lib/fetchJobsBySkills";
 import DashboardCharts from "@/components/DashboardCharts";
 import redis from "@/lib/redis";
 import AnimatedSection from "@/components/AnimatedSection";
+import { Job, ResumeData } from "@/types/resume";
+
+interface SkillFrequency {
+  skill: string;
+  count: number;
+}
 
 export default async function Dashboard() {
   const session = await auth();
@@ -26,7 +32,8 @@ export default async function Dashboard() {
   const cacheKey = `dashboard:analytics:${userEmail}`;
 
   const cached = await redis.get(cacheKey);
-  let resumes, skillsChart;
+  let resumes: ResumeData[];
+  let skillsChart: SkillFrequency[];
 
   if (cached) {
     const parsed = JSON.parse(cached);
@@ -34,11 +41,11 @@ export default async function Dashboard() {
     skillsChart = parsed.skillsChart;
   } else {
     await connectDB();
-    resumes = await Resume.find({ userEmail }).sort({
+    resumes = (await Resume.find({ userEmail }).sort({
       createdAt: -1,
-    });
+    })) as ResumeData[];
 
-    const allSkills = resumes.flatMap((r: any) => r.skills || []);
+    const allSkills = resumes.flatMap((r: ResumeData) => r.skills || []);
     const frequency: Record<string, number> = {};
 
     allSkills.forEach((skill) => {
@@ -58,9 +65,9 @@ export default async function Dashboard() {
     );
   } // Cache for 1 hour
 
-  const allSkills = resumes.flatMap((r: any) => r.skills || []);
+  const allSkills = resumes.flatMap((r: ResumeData) => r.skills || []);
 
-  let externalJobs: any[] = [];
+  let externalJobs: Job[] = [];
 
   if (allSkills.length > 0) {
     try {
@@ -70,9 +77,22 @@ export default async function Dashboard() {
     }
   }
 
-  const skillGapData = resumes[0]?.skillGap || [];
+  const skillGapDataRaw = resumes[0]?.skillGap || [];
+  const skillGapData = skillGapDataRaw.map(
+    (item: { skill: string; missing: string | number }) => ({
+      ...item,
+      missing:
+        typeof item.missing === "string" ? Number(item.missing) : item.missing,
+    })
+  );
   const readinessData = resumes[0]?.readiness || [];
-  const educationData = resumes[0]?.education || [];
+  const educationDataRaw = resumes[0]?.education || [];
+  const educationData = educationDataRaw.map(
+    (item: { year: string | number; degree: string; university: string }) => ({
+      ...item,
+      year: typeof item.year === "string" ? item.year : String(item.year),
+    })
+  );
 
   return (
     <section className="min-h-screen bg-gray-950 text-white px-6 py-16">

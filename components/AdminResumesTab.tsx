@@ -1,4 +1,12 @@
-export default function AdminResumesTab({ resumes }: { resumes: any[] }) {
+interface Resume {
+  _id: string;
+  name: string;
+  email: string;
+  skills?: string[];
+  createdAt: string;
+}
+
+export default function AdminResumesTab({ resumes }: { resumes: Resume[] }) {
   return (
     <div className="space-y-6">
       {resumes.map((r) => (

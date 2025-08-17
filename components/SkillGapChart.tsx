@@ -76,7 +76,7 @@ export default function SkillGapChart({ skillGap }: SkillGapChartProps) {
   return (
     <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
       <p className="text-gray-400 mb-4">
-        You're missing these skills based on job recommendations:
+        You&apos;re missing these skills based on job recommendations:
       </p>
       <div className="h-96">
         <Bar data={data} options={options} />

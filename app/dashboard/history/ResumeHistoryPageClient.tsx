@@ -3,13 +3,14 @@
 import ResumeCard from "@/components/ResumeCard";
 import { useToastStore } from "@/lib/useToast";
 import { useState } from "react";
+import { ResumeData } from "@/types/resume";
 
 export default function ResumeHistoryPageClient({
   initialResumes,
 }: {
-  initialResumes: any[];
+  initialResumes: ResumeData[];
 }) {
-  const [resumes, setResumes] = useState(initialResumes);
+  const [resumes, setResumes] = useState<ResumeData[]>(initialResumes);
   const [query, setQuery] = useState("");
   const { trigger } = useToastStore();
 

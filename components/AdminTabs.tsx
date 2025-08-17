@@ -1,27 +1,44 @@
 "use client";
 
 import { useState } from "react";
+import { Users, FileText, ChartNoAxesCombined, LogOut } from "lucide-react";
+import AnimatedSection from "./AnimatedSection";
 import AdminUsersTab from "./AdminUsersTab";
 import AdminResumesTab from "./AdminResumesTab";
-import { ChartNoAxesCombined, FileText, LogOut, Users} from "lucide-react";
-import AnimatedSection from "./AnimatedSection";
 import AdminAnalytics from "./AdminAnalytics";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface Resume {
+  _id: string;
+  name: string;
+  email: string;
+  skills?: string[];
+  createdAt: string;
+}
+
+interface Analytics {
+  totalUsers: number;
+  totalResumes: number;
+  latestUpload: string;
+  topSkills: string[];
+  providerCounts: Record<string, number>;
+  uploadsByMonth: { month: string; value: number }[];
+}
 
 export default function AdminTabs({
   users,
   resumes,
   analytics,
 }: {
-  users: any[];
-  resumes: any[];
-  analytics: {
-    totalUsers: number;
-    totalResumes: number;
-    latestUpload: string;
-    topSkills: string[];
-    providerCounts: Record<string, number>;
-    uploadsByMonth: { month: string; value: number }[];
-  };
+  users: User[];
+  resumes: Resume[];
+  analytics: Analytics;
 }) {
   const [tab, setTab] = useState("users");
 

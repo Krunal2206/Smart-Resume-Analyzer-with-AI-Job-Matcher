@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 interface ReadinessTrack {
   role: string;
@@ -16,7 +16,7 @@ const SkillReadiness: React.FC<SkillReadinessProps> = ({ readiness }) => {
         Skill Readiness
       </h2>
       <div className="space-y-4">
-        {readiness.map((track: any, idx: number) => (
+        {readiness.map((track: ReadinessTrack, idx: number) => (
           <div key={idx}>
             <p className="text-sm text-gray-300 mb-1">{track.role}</p>
             <div className="h-2 w-full bg-gray-700 rounded-full overflow-hidden">
@@ -34,4 +34,4 @@ const SkillReadiness: React.FC<SkillReadinessProps> = ({ readiness }) => {
   );
 };
 
-export default SkillReadiness
+export default SkillReadiness;

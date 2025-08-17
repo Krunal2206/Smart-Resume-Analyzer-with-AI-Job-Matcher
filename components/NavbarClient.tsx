@@ -16,8 +16,17 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { signOut } from "next-auth/react";
 
+interface Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
+  };
+}
+
 interface NavbarClientProps {
-  session: any; // you can create better types if you want
+  session: Session | null;
 }
 
 export default function NavbarClient({ session }: NavbarClientProps) {
