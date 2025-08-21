@@ -3,6 +3,11 @@ export interface SkillGap {
   missing: string;
 }
 
+export interface SkillFrequency {
+  skill: string;
+  count: number;
+}
+
 export interface Education {
   year: string | number;
   degree: string;

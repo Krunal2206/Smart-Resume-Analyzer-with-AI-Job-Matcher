@@ -35,6 +35,7 @@ export default function ResumeHistoryPageClient({
       setResumes(data.data);
       setPagination(data.pagination);
     } catch (error) {
+      console.error(error);
       trigger("Failed to load resumes", "Error fetching resumes");
     } finally {
       setLoading(false);

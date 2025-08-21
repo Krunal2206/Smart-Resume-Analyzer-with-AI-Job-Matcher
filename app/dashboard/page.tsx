@@ -15,17 +15,12 @@ import { fetchJobsBySkills } from "@/lib/fetchJobsBySkills";
 import DashboardCharts from "@/components/DashboardCharts";
 import redis from "@/lib/redis";
 import AnimatedSection from "@/components/AnimatedSection";
-import { Job, ResumeData } from "@/types/resume";
-
-interface SkillFrequency {
-  skill: string;
-  count: number;
-}
+import { Job, ResumeData, SkillFrequency } from "@/types/resume";
 
 // Helper function to safely parse and clean data
-function safeParseData(data: any): any {
+function safeParseData(data: unknown): ResumeData | null {
   try {
-    return JSON.parse(JSON.stringify(data));
+    return JSON.parse(JSON.stringify(data)) as ResumeData;
   } catch (error) {
     console.error("Error parsing data:", error);
     return null;
@@ -100,8 +95,8 @@ export default async function Dashboard() {
 
         // Clean and parse resume data
         resumes = resumesRaw
-          .map((resume: any) => safeParseData(resume))
-          .filter(Boolean);
+          .map((resume: unknown) => safeParseData(resume))
+          .filter((resume): resume is ResumeData => resume !== null);
 
         // Process skills safely
         const allSkills = processSkills(resumes);
@@ -127,8 +122,8 @@ export default async function Dashboard() {
         .exec();
 
       resumes = resumesRaw
-        .map((resume: any) => safeParseData(resume))
-        .filter(Boolean);
+        .map((resume: unknown) => safeParseData(resume))
+        .filter((resume): resume is ResumeData => resume !== null);
       const allSkills = processSkills(resumes);
       skillsChart = createSkillChart(allSkills);
     }

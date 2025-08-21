@@ -31,7 +31,7 @@ interface NavbarClientProps {
 
 export default function NavbarClient({ session }: NavbarClientProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);

@@ -8,12 +8,27 @@ if (!MONGODB_URI) {
   );
 }
 
+// Define types for the cached connection
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
+// Extend global interface to include mongoose cache
+declare global {
+  // eslint-disable-next-line no-var
+  var mongoose: MongooseCache | undefined;
+}
+
 // Global is used here to maintain a cached connection across hot reloads in development.
 // This prevents creating new connections on every reload.
-let cached = (global as any).mongoose;
+let cached: MongooseCache = globalThis.mongoose ?? {
+  conn: null,
+  promise: null,
+};
 
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+if (!globalThis.mongoose) {
+  globalThis.mongoose = cached;
 }
 
 export async function connectDB() {
