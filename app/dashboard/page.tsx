@@ -17,7 +17,11 @@ import redis from "@/lib/redis";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Education, Job, ResumeData, SkillFrequency, SkillGap } from "@/types/resume";
 
-// Helper function to safely parse and clean data
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = false;
+export const runtime = "nodejs";
+
 function safeParseData(data: unknown): ResumeData | null {
   try {
     return JSON.parse(JSON.stringify(data)) as ResumeData;
