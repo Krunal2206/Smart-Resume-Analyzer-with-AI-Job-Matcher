@@ -22,7 +22,7 @@ declare global {
 
 // Global is used here to maintain a cached connection across hot reloads in development.
 // This prevents creating new connections on every reload.
-let cached: MongooseCache = globalThis.mongoose ?? {
+const cached: MongooseCache = globalThis.mongoose ?? {
   conn: null,
   promise: null,
 };

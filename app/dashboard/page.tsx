@@ -15,7 +15,7 @@ import { fetchJobsBySkills } from "@/lib/fetchJobsBySkills";
 import DashboardCharts from "@/components/DashboardCharts";
 import redis from "@/lib/redis";
 import AnimatedSection from "@/components/AnimatedSection";
-import { Job, ResumeData, SkillFrequency } from "@/types/resume";
+import { Education, Job, ResumeData, SkillFrequency, SkillGap } from "@/types/resume";
 
 // Helper function to safely parse and clean data
 function safeParseData(data: unknown): ResumeData | null {
@@ -144,7 +144,7 @@ export default async function Dashboard() {
     // Safely process skill gap data
     const skillGapDataRaw = resumes[0]?.skillGap || [];
     const skillGapData = skillGapDataRaw
-      .map((item: any) => {
+      .map((item: SkillGap) => {
         if (!item || typeof item !== "object") return null;
 
         const missing =
@@ -169,7 +169,7 @@ export default async function Dashboard() {
     // Safely process education data
     const educationDataRaw = resumes[0]?.education || [];
     const educationData = educationDataRaw
-      .map((item: any) => {
+      .map((item: Education) => {
         if (!item || typeof item !== "object") return null;
 
         return {
