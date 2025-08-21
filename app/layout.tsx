@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GlobalToaster } from "@/lib/useToast";
+import OfflineDetector from "@/components/OfflineDetector";
 import "@/lib/env"; // Validate environment variables at startup
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,6 +27,7 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
         <GlobalToaster />
+        <OfflineDetector />
       </body>
     </html>
   );

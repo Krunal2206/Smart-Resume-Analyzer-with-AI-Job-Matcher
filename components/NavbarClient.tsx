@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Archive,
   Home,
@@ -31,6 +31,11 @@ interface NavbarClientProps {
 
 export default function NavbarClient({ session }: NavbarClientProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/auth/signin" });
@@ -90,14 +95,14 @@ export default function NavbarClient({ session }: NavbarClientProps) {
           {session?.user ? (
             <button
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl font-semibold flex items-center gap-1"
+              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl font-semibold flex items-center gap-1 cursor-pointer"
             >
               Logout
             </button>
           ) : (
             <Link
               href="/auth/signin"
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl font-semibold flex items-center gap-1"
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl font-semibold flex items-center gap-1 cursor-pointer"
             >
               <LogIn size={18} /> Sign In
             </Link>
@@ -105,7 +110,7 @@ export default function NavbarClient({ session }: NavbarClientProps) {
         </div>
 
         {/* Mobile Toggle Button */}
-        <button className="lg:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="lg:hidden cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>

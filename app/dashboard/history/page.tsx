@@ -10,15 +10,36 @@ export default async function ResumeHistoryPage() {
   if (!session?.user) redirect("/auth/signin");
 
   await connectDB();
-  const resumes = await Resume.find({ userEmail: session.user.email }).sort({
-    createdAt: -1,
-  });
+
+  const limit = 10;
+  const page = 1;
+
+  // Get total count
+  const total = await Resume.countDocuments({ userEmail: session.user.email });
+
+  // Get paginated resumes
+  const resumes = await Resume.find({ userEmail: session.user.email })
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  const totalPages = Math.ceil(total / limit);
+
+  const initialData = {
+    data: JSON.parse(JSON.stringify(resumes)),
+    pagination: {
+      total,
+      pages: totalPages,
+      currentPage: page,
+      limit,
+      hasNext: page < totalPages,
+      hasPrev: false,
+    },
+  };
 
   return (
     <AnimatedSection>
-      <ResumeHistoryPageClient
-        initialResumes={JSON.parse(JSON.stringify(resumes))}
-      />
+      <ResumeHistoryPageClient initialData={initialData} />
     </AnimatedSection>
   );
 }

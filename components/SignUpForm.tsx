@@ -1,27 +1,16 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useToastStore } from "@/lib/useToast";
 import { Mail, Lock, User, Loader2, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { registerSchema } from "@/lib/validationSchemas";
 
-const SignUpSchema = z
-  .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type SignUpSchemaType = z.infer<typeof SignUpSchema>;
+import { z } from "zod";
+type SignUpSchemaType = z.infer<typeof registerSchema>;
 
 export default function SignUpForm() {
   const {
@@ -29,7 +18,7 @@ export default function SignUpForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignUpSchemaType>({
-    resolver: zodResolver(SignUpSchema),
+    resolver: zodResolver(registerSchema),
   });
 
   const router = useRouter();
@@ -44,6 +33,7 @@ export default function SignUpForm() {
           name: data.name,
           email: data.email,
           password: data.password,
+          confirmPassword: data.confirmPassword,
         }),
       });
 
@@ -163,7 +153,7 @@ export default function SignUpForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition font-semibold py-2 rounded-xl flex justify-center items-center gap-2"
+          className="w-full bg-blue-600 hover:bg-blue-700 transition font-semibold py-2 rounded-xl flex justify-center items-center gap-2 cursor-pointer"
         >
           {isSubmitting ? (
             <Loader2 className="animate-spin" size={18} />
@@ -181,7 +171,7 @@ export default function SignUpForm() {
       <div className="mt-4">
         <button
           onClick={handleGoogleSignup}
-          className="w-full bg-white text-black hover:bg-gray-100 font-semibold py-2 rounded-xl flex justify-center items-center gap-2"
+          className="w-full bg-white text-black hover:bg-gray-100 font-semibold py-2 rounded-xl flex justify-center items-center gap-2 cursor-pointer"
         >
           Sign up with Google
         </button>

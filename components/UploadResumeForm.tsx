@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useToastStore } from "@/lib/useToast";
 import { FileText, UploadCloud } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function UploadResumeForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -11,14 +11,36 @@ export default function UploadResumeForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { trigger } = useToastStore();
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === "application/pdf") {
-      setSelectedFile(selectedFile);
-    } else {
-      trigger("Invalid File ❌", "Only PDF files are allowed.");
+    const file = e.target.files?.[0];
+    
+    if (!file) {
+      return;
     }
+
+    // Validate file type
+    if (file.type !== "application/pdf") {
+      trigger("Invalid File ❌", "Only PDF files are allowed.");
+      return;
+    }
+
+    // Validate file size (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      trigger("File Too Large ❌", "Maximum file size is 5MB.");
+      return;
+    }
+
+    // Validate file is not empty
+    if (file.size === 0) {
+      trigger("Invalid File ❌", "Cannot upload empty file.");
+      return;
+    }
+
+    setSelectedFile(file);
+    trigger("Resume Uploaded ✅", "Ready to analyze with AI.");
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -31,7 +53,6 @@ export default function UploadResumeForm() {
 
     const formData = new FormData();
     formData.append("resume", selectedFile);
-
     setIsLoading(true);
 
     try {
@@ -40,24 +61,37 @@ export default function UploadResumeForm() {
         body: formData,
       });
 
-      const data = await res.json();      
+      // First check if we got a response at all
+      if (!res) {
+        throw new Error("No response received from server");
+      }
 
-      if (!res.ok) {
-        if (data.limited && data.ttl) {
-          trigger(
-            "Rate Limit Reached 🛑",
-            `Try again in ${Math.ceil(data.ttl / 60)} minute(s).`
-          );
-        } else {
-          trigger("Upload Failed ❌", data.message || "Unknown error");
-        }
-      } else {
+      console.log("Response status:", res.status);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(res.headers.entries())
+      );
+
+      // Parse JSON response
+      let data;
+      try {
+        data = await res.json();
+        console.log("Parsed response data:", data);
+      } catch (jsonError) {
+        console.error("Failed to parse JSON:", jsonError);
+        const textResponse = await res.text();
+        console.log("Raw response text:", textResponse);
+        throw new Error("Server returned invalid JSON response");
+      }
+
+      // Handle different response statuses
+      if (res.status === 200 && data.success !== false) {
+        // Success case
+        console.log("Upload successful!");
         trigger("Resume Uploaded 🎯", "Resume parsed successfully!");
 
-        if (
-          typeof data.remaining !== "undefined" &&
-          typeof data.ttl !== "undefined"
-        ) {
+        // Show rate limiting info if available
+        if (data.remaining !== undefined && data.ttl !== undefined) {
           trigger(
             "Remaining Uploads ⏳",
             `You have ${data.remaining} upload(s) left in the next ${Math.ceil(
@@ -66,12 +100,43 @@ export default function UploadResumeForm() {
           );
         }
 
-        setParsedText(data.parsed);
-        redirect("/dashboard");
+        // Set parsed data and redirect
+        if (data.parsed) {
+          setParsedText(data.parsed);
+          console.log("Redirecting to dashboard...");
+          router.push("/dashboard");
+        } else {
+          console.warn("No parsed data in response");
+          trigger("Warning ⚠️", "Upload successful but no data received");
+        }
+      } else if (res.status === 429) {
+        // Rate limited
+        trigger(
+          "Rate Limit Reached 🛑",
+          data.message ||
+            `Try again in ${Math.ceil((data.ttl || 3600) / 60)} minute(s).`
+        );
+      } else {
+        // Other errors
+        console.error("Upload failed with status:", res.status);
+        trigger(
+          "Upload Failed ❌",
+          data.message || `Server error (${res.status})`
+        );
       }
     } catch (error) {
       console.error("Upload error:", error);
-      trigger("Something went wrong ❌", "Please try again later.");
+
+      if (error instanceof TypeError) {
+        trigger(
+          "Network Error ❌",
+          "Connection failed. Please check your internet."
+        );
+      } else if (error instanceof Error) {
+        trigger("Upload Error ❌", error.message);
+      } else {
+        trigger("Unknown Error ❌", "Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -90,12 +155,12 @@ export default function UploadResumeForm() {
           <p className="text-gray-300 mb-2">
             Drag & drop your resume here, or click to select a file
           </p>
-          <p className="text-sm text-gray-500">Supported formats: PDF, DOCX</p>
+          <p className="text-sm text-gray-500">Supported format: PDF only (max 5MB)</p>
         </label>
         <input
           type="file"
           id="resume-upload"
-          accept=".pdf"
+          accept="application/pdf"
           onChange={handleFileChange}
           className="hidden"
         />

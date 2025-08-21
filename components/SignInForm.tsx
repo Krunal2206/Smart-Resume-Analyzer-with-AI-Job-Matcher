@@ -100,7 +100,7 @@ export default function SignInForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition font-semibold py-2 rounded-xl flex justify-center items-center gap-2"
+          className="w-full bg-blue-600 hover:bg-blue-700 transition font-semibold py-2 rounded-xl flex justify-center items-center gap-2 cursor-pointer"
         >
           {isSubmitting ? (
             <Loader2 className="animate-spin" size={18} />
@@ -117,7 +117,7 @@ export default function SignInForm() {
       <div className="mt-4">
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-white text-black hover:bg-gray-100 font-semibold py-2 rounded-xl flex justify-center items-center gap-2"
+          className="w-full bg-white text-black hover:bg-gray-100 font-semibold py-2 rounded-xl flex justify-center items-center gap-2 cursor-pointer"
         >
           Sign in with Google
         </button>
